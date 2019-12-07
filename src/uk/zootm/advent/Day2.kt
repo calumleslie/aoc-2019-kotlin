@@ -4,7 +4,7 @@ import java.io.File
 import java.io.FileInputStream
 
 class Program(val memory: IntArray) {
-    var instruction = Loc(0)
+    var instruction = Addr(0)
     var finished = false
 
     companion object Parser {
@@ -43,12 +43,12 @@ class Program(val memory: IntArray) {
     }
 
     // op1 = sum then store
-    fun op1(in1: Loc, in2: Loc, out: Loc) {
+    fun op1(in1: Addr, in2: Addr, out: Addr) {
         out.readPtr().write(in1.readPtr().read() + in2.readPtr().read())
     }
 
     // op2 = product then store
-    fun op2(in1: Loc, in2: Loc, out: Loc) {
+    fun op2(in1: Addr, in2: Addr, out: Addr) {
         out.readPtr().write(in1.readPtr().read() * in2.readPtr().read())
     }
 
@@ -56,7 +56,7 @@ class Program(val memory: IntArray) {
         println(memory.joinToString())
     }
 
-    inner class Loc(private val i: Int) {
+    inner class Addr(private val i: Int) {
         init {
             assert(i < memory.size, lazyMessage = { "Found invalid location $i (memory size is ${memory.size}" })
         }
@@ -65,13 +65,13 @@ class Program(val memory: IntArray) {
             memory[i] = value
         }
 
-        fun readPtr() = Loc(memory[i])
+        fun readPtr() = Addr(memory[i])
 
         fun read() = memory[i]
 
-        fun nextInstruction() = Loc(i + 4)
+        fun nextInstruction() = Addr(i + 4)
 
-        fun arg(index: Int) = Loc(i + 1 + index)
+        fun arg(index: Int) = Addr(i + 1 + index)
     }
 }
 //1,0,0,0,99 becomes 2,0,0,0,99 (1 + 1 = 2).
@@ -88,10 +88,10 @@ fun main() {
 
     val prog1 = Program.fromFile(File("inputs/day2.1.txt"))
     // before running the program, replace position 1 with the value 12 and replace position 2 with the value 2
-    prog1.Loc(1).write(12)
-    prog1.Loc(2).write(2)
+    prog1.Addr(1).write(12)
+    prog1.Addr(2).write(2)
     prog1.execute()
-    println("Part 1: ${prog1.Loc(0).read()}")
+    println("Part 1: ${prog1.Addr(0).read()}")
 }
 
 fun parseExecDump( input: String) {
