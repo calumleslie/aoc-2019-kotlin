@@ -23,6 +23,8 @@ class Program(val memory: IntArray) {
         }
     }
 
+    fun copy(): Program = Program(memory.clone())
+
     fun execute(trace: Boolean = false) {
         while (!finished) {
             step()
@@ -86,12 +88,30 @@ fun main() {
     parseExecDump("2,4,4,5,99,0")
     parseExecDump("1,1,1,4,99,5,6,0,99")
 
-    val prog1 = Program.fromFile(File("inputs/day2.1.txt"))
+    val base = Program.fromFile(File("inputs/day2.1.txt"))
+
     // before running the program, replace position 1 with the value 12 and replace position 2 with the value 2
-    prog1.Addr(1).write(12)
-    prog1.Addr(2).write(2)
-    prog1.execute()
-    println("Part 1: ${prog1.Addr(0).read()}")
+    val part1 = base.copy()
+    part1.Addr(1).write(12)
+    part1.Addr(2).write(2)
+    part1.execute()
+    println("Part 1: ${part1.Addr(0).read()}")
+
+    for(noun in (0..100)) {
+        for (verb in (0..100)) {
+            val prog = base.copy()
+            prog.Addr(1).write(noun)
+            prog.Addr(2).write(verb)
+            prog.execute()
+
+            val result = prog.Addr(0).read()
+            if(result == 19690720) {
+                println("Part 2: noun=$noun, verb=$verb, solution=${100 * noun + verb}")
+            }
+        }
+    }
+
+
 }
 
 fun parseExecDump( input: String) {
