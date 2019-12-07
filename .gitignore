@@ -1,0 +1,6 @@
+# Docs suggest much of this can be checked in but in practice it's a pain working out which parts, look at this
+# nightmare for a "full" treatment: https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
+/.idea
+
+# Compiler output
+/out
