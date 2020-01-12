@@ -1,20 +1,19 @@
 package uk.zootm.advent.intcode
 
-import uk.zootm.advent.intcode.Memory.Addr
-
 class Computer(val memory: Memory, val input: Input, val output: Output) {
     var instructionPointer = memory.Addr(0)
     var finished = false
 
     fun execute(trace: Boolean = false) {
         while (!finished) {
-            step()
-            if (trace) println(this)
+            step(trace)
+            if (trace) println("STATE: $this")
         }
     }
 
-    fun step() {
+    fun step(trace: Boolean) {
         val instruction = Instruction.from(instructionPointer)
+        if(trace) println("INSTRUCTION: $instruction")
         instruction.exec(input, output)
 
         val next = instruction.next()
