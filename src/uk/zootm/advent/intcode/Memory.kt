@@ -52,8 +52,6 @@ class Memory(val store: IntArray) {
 
         operator fun plus(incr: Int) = Addr(i + incr)
 
-        fun arg(index: Int) = this + (1 + index)
-
         override fun toString() = "Addr($i)"
     }
 }

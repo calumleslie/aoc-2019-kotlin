@@ -26,10 +26,18 @@ class ComputerTest {
         val input = Input.of(42)
         val output = CollectingOutput()
 
-        memory.makeComputer(input = input, output = output).execute(trace = true)
+        memory.makeComputer(input = input, output = output).execute()
 
         assertEquals(listOf(42), output.data)
     }
+
+    @Test
+    fun `day 5 - parameter types`() =
+        assertExecution("1002,4,3,4,33", "1002,4,3,4,99")
+
+    @Test
+    fun `day 5 - negatives`() =
+        assertExecution("1101,100,-1,4,0", "1101,100,-1,4,99")
 
     private fun assertExecution(initial: String, expectedFinal: String) {
         val computer = Memory.fromString(initial).makeComputer()
