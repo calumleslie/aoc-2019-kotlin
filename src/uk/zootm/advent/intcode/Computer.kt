@@ -1,29 +1,12 @@
 package uk.zootm.advent.intcode
 
+import uk.zootm.advent.intcode.Memory.Addr
 import java.io.File
 import java.io.FileInputStream
 
-class Computer(val memory: IntArray) {
-    var instruction = Addr(0)
+class Computer(val memory: Memory) {
+    var instruction = memory.Addr(0)
     var finished = false
-
-    companion object Parser {
-        fun fromString(input: String): Computer {
-            val memory = input.splitToSequence(",")
-                .map { Integer.parseInt(it) }
-                .toList()
-                .toIntArray()
-
-            return Computer(memory)
-        }
-
-        fun fromFile(file: File): Computer {
-            val text = FileInputStream(file).bufferedReader().use { it.readLine() }
-            return fromString(text)
-        }
-    }
-
-    fun copy(): Computer = Computer(memory.clone())
 
     fun execute(trace: Boolean = false) {
         while (!finished) {
@@ -54,25 +37,6 @@ class Computer(val memory: IntArray) {
         out.readPtr().write(in1.readPtr().read() * in2.readPtr().read())
     }
 
-    fun memoryEquals(other: Computer): Boolean = this.memory.contentEquals(other.memory)
+    override fun toString(): String = "Computer(instruction: $instruction, finished: $finished, memory: $memory)"
 
-    override fun toString(): String = this.memory.joinToString(",")
-
-    inner class Addr(private val i: Int) {
-        init {
-            assert(i < memory.size, lazyMessage = { "Found invalid location $i (memory size is ${memory.size}" })
-        }
-
-        fun write(value: Int) {
-            memory[i] = value
-        }
-
-        fun readPtr() = Addr(memory[i])
-
-        fun read() = memory[i]
-
-        fun nextInstruction() = Addr(i + 4)
-
-        fun arg(index: Int) = Addr(i + 1 + index)
-    }
 }

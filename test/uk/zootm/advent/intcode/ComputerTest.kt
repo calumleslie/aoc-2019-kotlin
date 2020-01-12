@@ -1,9 +1,7 @@
 package uk.zootm.advent.intcode
 
-import uk.zootm.advent.parseExecDump
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ComputerTest {
     @Test
@@ -23,10 +21,10 @@ class ComputerTest {
         assertExecution("1,1,1,4,99,5,6,0,99", "30,1,1,4,2,5,6,0,99")
 
     private fun assertExecution(initial: String, expectedFinal: String) {
-        val computer = Computer.fromString(initial)
+        val computer = Memory.fromString(initial).makeComputer()
         computer.execute()
 
-        val expected = Computer.fromString(expectedFinal)
-        assertTrue(expected.memoryEquals(computer), "final state $computer != $expected")
+        val expectedMemory = Memory.fromString(expectedFinal)
+        assertEquals(expectedMemory, computer.memory)
     }
 }
