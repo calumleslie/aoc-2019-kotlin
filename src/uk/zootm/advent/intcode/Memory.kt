@@ -4,9 +4,14 @@ import java.io.File
 import java.io.FileInputStream
 
 class Memory(val store: IntArray) {
-    fun makeComputer(): Computer = Computer(this)
+    fun makeComputer(input: Input = Input.empty(), output: Output = NoopOutput()): Computer =
+        Computer(this, input, output)
 
     fun copy(): Memory = Memory(store.clone())
+
+    override fun toString() = store.joinToString(",")
+
+    override fun hashCode() = store.contentHashCode()
 
     override fun equals(other: Any?): Boolean {
         if (other != null && other is Memory) {
@@ -45,8 +50,10 @@ class Memory(val store: IntArray) {
 
         fun read() = store[i]
 
-        fun nextInstruction() = Addr(i + 4)
+        operator fun plus(incr: Int) = Addr(i + incr)
 
-        fun arg(index: Int) = Addr(i + 1 + index)
+        fun arg(index: Int) = this + (1 + index)
+
+        override fun toString() = "Addr($i)"
     }
 }

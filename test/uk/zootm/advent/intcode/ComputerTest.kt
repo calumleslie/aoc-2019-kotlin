@@ -20,6 +20,17 @@ class ComputerTest {
     fun `day 2 - 1,1,1,4,99,5,6,0,99 becomes 30,1,1,4,2,5,6,0,99`() =
         assertExecution("1,1,1,4,99,5,6,0,99", "30,1,1,4,2,5,6,0,99")
 
+    @Test
+    fun `day 5 - echo`() {
+        val memory = Memory.fromString("3,0,4,0,99")
+        val input = Input.of(42)
+        val output = CollectingOutput()
+
+        memory.makeComputer(input = input, output = output).execute(trace = true)
+
+        assertEquals(listOf(42), output.data)
+    }
+
     private fun assertExecution(initial: String, expectedFinal: String) {
         val computer = Memory.fromString(initial).makeComputer()
         computer.execute()
