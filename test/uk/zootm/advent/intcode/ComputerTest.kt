@@ -1,5 +1,6 @@
 package uk.zootm.advent.intcode
 
+import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -38,6 +39,17 @@ class ComputerTest {
     @Test
     fun `day 5 - negatives`() =
         assertExecution("1101,100,-1,4,0", "1101,100,-1,4,99")
+
+    @Test
+    fun `day 5 - part 1 regression`() {
+        val base = Memory.fromFile(File("inputs/day5.1.txt"))
+        val output = CollectingOutput()
+        base.makeComputer(
+            input = Input.of(1),
+            output = output
+        ).execute()
+        assertEquals(listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 14155342), output.data)
+    }
 
     private fun assertExecution(initial: String, expectedFinal: String) {
         val computer = Memory.fromString(initial).makeComputer()

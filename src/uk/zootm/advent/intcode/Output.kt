@@ -17,3 +17,7 @@ class CollectingOutput: Output {
         data.add(o)
     }
 }
+
+class PrintingOutput: Output {
+    override fun write(o: Int) = println("OUT: $o")
+}
