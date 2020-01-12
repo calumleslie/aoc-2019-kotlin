@@ -42,6 +42,8 @@ class Memory(val store: IntArray) {
             assert(i < store.size, lazyMessage = { "Found invalid location $i (memory size is ${store.size}" })
         }
 
+        fun memory() = this@Memory
+
         fun write(value: Int) {
             store[i] = value
         }

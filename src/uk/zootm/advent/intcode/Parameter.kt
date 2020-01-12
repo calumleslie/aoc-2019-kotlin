@@ -2,15 +2,16 @@ package uk.zootm.advent.intcode
 
 import uk.zootm.advent.intcode.Memory.Addr
 
-interface Parameter {
-    fun read(): Int
-    fun write(out: Int)
+abstract class Parameter(protected val addr: Addr) {
+    abstract fun read(): Int
+    abstract fun write(out: Int)
+    fun readAsAddr() = addr.memory().Addr(read())
 }
 
 /**
  * Mode 0
  */
-class PositionParameter(private val addr: Addr): Parameter {
+class PositionParameter(addr: Addr): Parameter(addr) {
     override fun read() = addr.readPtr().read()
     override fun write(out: Int) = addr.readPtr().write(out)
     override fun toString() = "PositionParameter($addr)"
@@ -19,7 +20,7 @@ class PositionParameter(private val addr: Addr): Parameter {
 /**
  * Mode 1
  */
-class ImmediateParameter(private val addr: Addr): Parameter {
+class ImmediateParameter(addr: Addr): Parameter(addr) {
     override fun read() = addr.read()
     override fun write(out: Int) = throw IllegalStateException("Attempted to write to immediate-mode parameter at $addr")
     override fun toString() = "ImmediateParameter($addr)"

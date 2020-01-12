@@ -51,11 +51,82 @@ class ComputerTest {
         assertEquals(listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 14155342), output.data)
     }
 
-    private fun assertExecution(initial: String, expectedFinal: String) {
-        val computer = Memory.fromString(initial).makeComputer()
-        computer.execute()
+    @Test
+    fun `day 5 - equals positional`() {
+        val program = "3,9,8,9,10,9,4,9,99,-1,8"
+        assertExecution(program, input = listOf(7), expectedOutput = listOf(0))
+        assertExecution(program, input = listOf(8), expectedOutput = listOf(1))
+        assertExecution(program, input = listOf(9), expectedOutput = listOf(0))
+    }
 
-        val expectedMemory = Memory.fromString(expectedFinal)
-        assertEquals(expectedMemory, computer.memory)
+    @Test
+    fun `day 5 - less than positional`() {
+        val program = "3,9,7,9,10,9,4,9,99,-1,8"
+        assertExecution(program, input = listOf(7), expectedOutput = listOf(1))
+        assertExecution(program, input = listOf(8), expectedOutput = listOf(0))
+        assertExecution(program, input = listOf(9), expectedOutput = listOf(0))
+    }
+
+    @Test
+    fun `day 5 - equals immediate`() {
+        val program = "3,3,1108,-1,8,3,4,3,99"
+        assertExecution(program, input = listOf(7), expectedOutput = listOf(0))
+        assertExecution(program, input = listOf(8), expectedOutput = listOf(1))
+        assertExecution(program, input = listOf(9), expectedOutput = listOf(0))
+    }
+
+    @Test
+    fun `day 5 - less than immediate`() {
+        val program = "3,3,1107,-1,8,3,4,3,99"
+        assertExecution(program, input = listOf(7), expectedOutput = listOf(1))
+        assertExecution(program, input = listOf(8), expectedOutput = listOf(0))
+        assertExecution(program, input = listOf(9), expectedOutput = listOf(0))
+    }
+
+    @Test
+    fun `day 5 - is zero positional`() {
+        val program = "3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9"
+        assertExecution(program, input = listOf(0), expectedOutput = listOf(0))
+        assertExecution(program, input = listOf(123), expectedOutput = listOf(1))
+    }
+
+    @Test
+    fun `day 5 - is zero immediate`() {
+        val program = "3,3,1105,-1,9,1101,0,0,12,4,12,99,1"
+        assertExecution(program, input = listOf(0), expectedOutput = listOf(0))
+        assertExecution(program, input = listOf(321), expectedOutput = listOf(1))
+    }
+
+    @Test
+    fun `day 5 - compare to 8`() {
+        val program = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
+                "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
+                "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99"
+
+
+        assertExecution(program, input = listOf(-42), expectedOutput = listOf(999))
+        assertExecution(program, input = listOf(7), expectedOutput = listOf(999))
+        assertExecution(program, input = listOf(8), expectedOutput = listOf(1000))
+        assertExecution(program, input = listOf(9), expectedOutput = listOf(1001))
+        assertExecution(program, input = listOf(8787), expectedOutput = listOf(1001))
+    }
+
+    private fun assertExecution(
+        initial: String,
+        expectedFinal: String? = null,
+        input: List<Int> = listOf(),
+        expectedOutput: List<Int> = listOf(),
+        trace: Boolean = false
+    ) {
+        val output = CollectingOutput()
+        val computer = Memory.fromString(initial).makeComputer(input = Input.of(*input.toIntArray()), output = output)
+        computer.execute(trace = trace)
+
+        if (expectedFinal != null) {
+            val expectedMemory = Memory.fromString(expectedFinal)
+            assertEquals(expectedMemory, computer.memory)
+        }
+
+        assertEquals(expectedOutput, output.data)
     }
 }

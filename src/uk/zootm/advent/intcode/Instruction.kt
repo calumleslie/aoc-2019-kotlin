@@ -6,7 +6,9 @@ abstract class Instruction(protected val base: Addr, paramCount: Int) {
     protected val parameters: List<Parameter> =
         (0 until paramCount).map { resolveParameter(it) }
 
-    abstract fun exec(input: Input, output: Output)
+    open fun exec(input: Input, output: Output) {
+        // Default is no-op
+    }
 
     open fun next(): Addr? = base + (parameters.size + 1)
 
@@ -39,6 +41,10 @@ abstract class Instruction(protected val base: Addr, paramCount: Int) {
             2 -> Product(addr)
             3 -> Read(addr)
             4 -> Write(addr)
+            5 -> JumpIfTrue(addr)
+            6 -> JumpIfFalse(addr)
+            7 -> LessThan(addr)
+            8 -> Equals(addr)
             99 -> Stop(addr)
             else -> throw UnsupportedOperationException("Unsupported opcode ${addr.read()}")
         }
@@ -75,7 +81,7 @@ class Read(base: Addr) : Instruction(base, 1) {
 }
 
 /**
- * Operation 3: Write
+ * Operation 4: Write
  */
 class Write(base: Addr) : Instruction(base, 1) {
     override fun exec(input: Input, output: Output) {
@@ -84,12 +90,54 @@ class Write(base: Addr) : Instruction(base, 1) {
 }
 
 /**
+ * Operation 5: jump-if-true
+ *
+ * if the first parameter is non-zero, it sets the instruction pointer to the value from the second parameter.
+ * Otherwise, it does nothing.
+ */
+class JumpIfTrue(base: Addr) : Instruction(base, 2) {
+    override fun next() = if (parameters[0].read() != 0) parameters[1].readAsAddr() else super.next()
+}
+
+/**
+ * Operation 6: jump-if-false
+ *
+ * if the first parameter is zero, it sets the instruction pointer to the value from the second parameter. Otherwise, it
+ * does nothing.
+ */
+
+class JumpIfFalse(base: Addr) : Instruction(base, 2) {
+    override fun next() = if (parameters[0].read() == 0) parameters[1].readAsAddr() else super.next()
+}
+
+/**
+ * Operation 7: less than
+ *
+ * if the first parameter is less than the second parameter, it stores 1 in the position given by the third parameter.
+ * Otherwise, it stores 0.
+ */
+class LessThan(base: Addr) : Instruction(base, 3) {
+    override fun exec(input: Input, output: Output) {
+        val lt = parameters[0].read() < parameters[1].read()
+        parameters[2].write(if (lt) 1 else 0)
+    }
+}
+
+/**
+ * Operation 8: equals
+ *
+ * if the first parameter is equal to the second parameter, it stores 1 in the position given by the third parameter. Otherwise, it stores 0.
+ */
+class Equals(base: Addr) : Instruction(base, 3) {
+    override fun exec(input: Input, output: Output) {
+        val eq = parameters[0].read() == parameters[1].read()
+        parameters[2].write(if (eq) 1 else 0)
+    }
+}
+
+/**
  * Operation 99: Stop
  */
 class Stop(base: Addr) : Instruction(base, 0) {
-    override fun exec(input: Input, output: Output) {
-        // No-op
-    }
-
     override fun next(): Addr? = null
 }
